@@ -1,13 +1,37 @@
 import { Link, routes } from "@redwoodjs/router"
+import { Post } from "types/graphql";
+import CommentsCell from 'src/components/CommentsCell'
+import CommentForm from "../CommentForm/CommentForm";
 
-const Article = ({article}) => {
+const truncate = (text: string, length: number) => {
+  return text.substring(0, length) + (text.length > length ? '...' : '');
+}
+
+interface Props {
+  article: Omit<Post, 'createdAt'>
+  summary?: boolean
+}
+
+const Article = ({ article, summary = false }: Props) => {
   return (
-    <article key={article.id}>
+    <article>
       <header>
-        <h2><Link to={routes.article({id: article.id})}>{article.title}</Link></h2>
+        <h2 className="text-xl text-blue-700 font-semibold">
+          <Link to={routes.article({ id: article.id })}>{article.title}</Link>
+        </h2>
       </header>
-      <p>{article.body}</p>
-      <div>Posted at: {article.createdAt}</div>
+      <div className="mt-2 text-gray-900 font-light">
+        {summary ? truncate(article.body, 100) : article.body}
+      </div>
+      {!summary && (
+        <div className="mt-12">
+          <CommentForm postId={article.id} />
+          <div className="mt-12">
+            <CommentsCell postId={article.id} />
+          </div>
+        </div>
+
+      )}
     </article>
   )
 }
