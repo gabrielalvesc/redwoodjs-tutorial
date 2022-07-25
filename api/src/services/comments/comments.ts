@@ -2,6 +2,7 @@ import type { QueryResolvers, CommentResolvers } from 'types/graphql'
 import type { Prisma } from '@prisma/client'
 
 import { db } from 'src/lib/db'
+import { requireAuth } from 'src/lib/auth'
 
 
 interface CreateCommentArgs {
@@ -25,6 +26,7 @@ export const comment = ({ id }) => {
 }
 
 export const deleteComment = ({ id }: Prisma.CommentWhereUniqueInput ) => {
+  requireAuth({ roles: 'moderator' })
   return db.comment.delete({
     where: { id }
   })
